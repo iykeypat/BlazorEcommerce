@@ -8,6 +8,10 @@ namespace BlazorEcommerce.Client.Services.ProductService
 
         public List<Product> Products { get; set; } = new List<Product>();
 
+        public ServiceResponse<Product> serviceResponse { get; set; } = new ServiceResponse<Product>();
+
+
+
         public ProductService(HttpClient httpClient)
         {
             this.httpClient = httpClient;
@@ -21,6 +25,22 @@ namespace BlazorEcommerce.Client.Services.ProductService
                 Products = result.Data;
             }
 
+        }
+
+
+
+        public async Task<ServiceResponse<Product>> GetProduct(int productId)
+        {
+            var result = await httpClient.GetFromJsonAsync<ServiceResponse<Product>>($"api/product/{productId}");
+
+            return result;
+                
+   
+        }
+
+        public Product GetProductById(int id)
+        {
+            return  httpClient.GetFromJsonAsync<Product>("api/product/GetProductById/" + id).Result;
         }
     }
 }
