@@ -24,25 +24,27 @@ else
 @code {
     private Product? product = null;
     private string message = string.Empty;
+    private ServiceResponse<Product> result ;
 
     [Parameter]
     public int id { get; set; }
 
     protected  override async Task OnParametersSetAsync()
     {
-        message = "Loading product...";
+        this.message = "Loading product...";
 
         //var result = await ProductService.GetProduct(id);
-        product =  ProductService.Products.Find(x => x.Id == id);
+        result = await ProductService.GetProduct(id);
+        //product =  ProductService.Products.Find(x => x.Id == id);
        // product = ProductService.GetProductById(id);
 
-        //if (!result.Success)
-        //{
-        //   message = result.Message;
-        //} else
-        //{
+        if (!result.Success)
+        {
+          this.message = result.Message;
+        } else
+        {
              
-        //     product = result.Data;
-        //}
+             this.product = result.Data;
+        }
     }
 }   

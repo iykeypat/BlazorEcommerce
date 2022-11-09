@@ -31,9 +31,25 @@ namespace BlazorEcommerce.Client.Services.ProductService
 
         public async Task<ServiceResponse<Product>> GetProduct(int productId)
         {
-            var result = await httpClient.GetFromJsonAsync<ServiceResponse<Product>>($"api/product/{productId}");
+            
+            var result = await httpClient.GetFromJsonAsync<ServiceResponse<Product>>($"/api/Products/product/{productId}");
 
-            return result;
+            if (result != null && result.Data != null)
+            {
+                               return result;
+            }
+            else
+            {
+                result = new ServiceResponse<Product>
+                {
+                    Success = false,
+                    Message = "Sorry, but this product does not exist"
+                };
+
+                return result;
+            }
+
+           
                 
    
         }
