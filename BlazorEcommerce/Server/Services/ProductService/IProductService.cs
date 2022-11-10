@@ -7,5 +7,7 @@
         Task<ServiceResponse<Product>> GetProductAsync(int productId);
 
         Product GetProductById(int productId);
+
+        Task<ServiceResponse<List<Product>>> GetProductsByCategory(string categoryUrl);
     }
 }
