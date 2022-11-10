@@ -14,7 +14,7 @@
         {
             var response = new ServiceResponse<Product>();
 
-            var product = await context.Products.FindAsync(productId);
+            var product = await context.Products.Include(x => x.Variants).ThenInclude(y => y.ProductType).FirstOrDefaultAsync( z => z.Id == productId);
 
             if (product == null)
             {
@@ -42,7 +42,7 @@
         {
             var response = new ServiceResponse<List<Product>>
             {
-                Data = await context.Products.ToListAsync()
+                Data = await context.Products.Include(x => x.Variants).ToListAsync()
             };
 
             return response;
@@ -53,7 +53,8 @@
         {
             var response = new ServiceResponse<List<Product>>()
             {
-                Data = await context.Products.Where( x => x.Category.Url.ToLower().Equals(categoryUrl.ToLower())).ToListAsync()
+                Data = await context.Products.Where( x => x.Category.Url.ToLower().Equals(categoryUrl.ToLower()))
+                .Include(p => p.Variants).ToListAsync()
             };
 
             return response;
