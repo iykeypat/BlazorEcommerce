@@ -7,10 +7,15 @@ namespace BlazorEcommerce.Client.Services.ProductService
         List<Product> Products { get; set; }
 
         event Action ProductChanged;
+
+        string Message { get; set; }
         
         Task GetProducts(string? categoryUrl = null);
 
-        Product GetProductById(int id);   
+        Task SearchProducts(string searchText);
+
+        Task<List<string>> GetProductSearchSuggestions(string searchText);
+  
 
        Task<ServiceResponse<Product>> GetProduct(int productId);
     }
