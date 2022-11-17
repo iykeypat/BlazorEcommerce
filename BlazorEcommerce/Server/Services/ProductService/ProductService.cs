@@ -59,5 +59,18 @@
 
             return response;
         }
+
+        //returns a list of products based on given search strings
+        public async Task<ServiceResponse<List<Product>>> SearchProducts(string searchText)
+        {
+            var response = new ServiceResponse<List<Product>>
+            {
+                Data = await context.Products.Where(p => 
+                p.Title.ToLower().Contains(searchText.ToLower()) || p.Description.ToLower().Contains(searchText.ToLower()))
+                .Include(p => p.Variants).ToListAsync()
+            };
+
+            return response;
+        }
     }
 }
