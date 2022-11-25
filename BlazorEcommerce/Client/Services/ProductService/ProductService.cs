@@ -9,14 +9,13 @@ namespace BlazorEcommerce.Client.Services.ProductService
         public event Action ProductChanged;
 
         public List<Product> Products { get; set; } = new List<Product>();
-
-        //public ServiceResponse<Product> serviceResponse { get; set; } = new ServiceResponse<Product>();
-
         public string Message { get; set; } = "Loading products...";
-
+        public int CurrentPage { get; set; } = 1;
+        public int PageCount { get; set; } = 0;
+        public string LastSearchText { get; set; } = string.Empty;
 
         //ctor
-        public ProductService(HttpClient httpClient)
+        public ProductService(HttpClient httpClient)  
         {
             this.httpClient = httpClient;
         }
@@ -33,6 +32,14 @@ namespace BlazorEcommerce.Client.Services.ProductService
             {
                 Products = result.Data;
             }
+            CurrentPage = 1;
+            PageCount = 0;
+
+            if(Products.Count == 0)
+            {
+                Message = "No products found";
+
+            }
 
             ProductChanged.Invoke();
 
@@ -44,7 +51,6 @@ namespace BlazorEcommerce.Client.Services.ProductService
         {
             
             var result = await httpClient.GetFromJsonAsync<ServiceResponse<Product>>($"/api/Products/product/{productId}");
-
             if (result != null && result.Data != null)
             {
                                return result;
@@ -65,13 +71,17 @@ namespace BlazorEcommerce.Client.Services.ProductService
    
         }
 
-        public async Task SearchProducts(string searchText)
+
+        //returns a list of products according to the given search parameters
+        public async Task SearchProducts(string searchText, int page)
         {
-            var result = await httpClient.GetFromJsonAsync<ServiceResponse<List<Product>>>("/api/products/search/"+searchText);
+            var result = await httpClient.GetFromJsonAsync<ServiceResponse<ProductSearchResult>>($"/api/products/search/{searchText}/{page}");
 
             if (result != null && result.Data != null)
             {
-                Products = result.Data;
+                Products = result.Data.Products;
+                CurrentPage = result.Data.CurrentPage;
+                PageCount = result.Data.Pages;
             }
 
             if (Products.Count == 0)
