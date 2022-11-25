@@ -65,16 +65,14 @@ namespace BlazorEcommerce.Client.Services.ProductService
 
                 return result;
             }
-
-           
-                
-   
+  
         }
 
 
         //returns a list of products according to the given search parameters
         public async Task SearchProducts(string searchText, int page)
         {
+            LastSearchText = searchText;
             var result = await httpClient.GetFromJsonAsync<ServiceResponse<ProductSearchResult>>($"/api/products/search/{searchText}/{page}");
 
             if (result != null && result.Data != null)
