@@ -26,7 +26,17 @@ namespace BlazorEcommerce.Client.Services.CartService
             {
                 cart = new List<CartItem>();
             }
-            cart.Add(cartItem);
+            var sameItem = cart.Find(x => x.ProductId == cartItem.ProductId && x.ProductTypeId == cartItem.ProductTypeId);
+
+            if (sameItem == null)
+            {
+                cart.Add(cartItem);
+            }
+            else
+            {
+                sameItem.Quantity += cartItem.Quantity;
+            }
+            
 
             await _localStorage.SetItemAsync("cart", cart);
             OnChange.Invoke();
@@ -55,6 +65,7 @@ namespace BlazorEcommerce.Client.Services.CartService
             return cartProducts.Data;
         }
 
+        //remove item from cart
         public async Task RemoveProductFromCart(int productId, int productTypeId)
         {
             var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart");
