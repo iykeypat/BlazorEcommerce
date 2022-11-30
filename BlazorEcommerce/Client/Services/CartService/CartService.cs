@@ -1,4 +1,5 @@
-﻿using Blazored.LocalStorage;
+﻿using BlazorEcommerce.Shared;
+using Blazored.LocalStorage;
 
 
 namespace BlazorEcommerce.Client.Services.CartService
@@ -82,6 +83,23 @@ namespace BlazorEcommerce.Client.Services.CartService
                 OnChange.Invoke();
             }
             
+        }
+
+        public async Task UpdateQuantity(CartProductResponse product)
+        {
+            var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart");
+            if (cart == null)
+            {
+                return;
+            }
+            var cartItem = cart.Find(item => item.ProductId == product.ProductId && item.ProductTypeId == product.ProductTypeId);
+
+            if (cartItem != null)
+            {
+                cartItem.Quantity = product.Quantity;
+                await _localStorage.SetItemAsync("cart", cart);
+            }
+
         }
     }
 }
