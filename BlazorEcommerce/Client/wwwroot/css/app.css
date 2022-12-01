@@ -82,4 +82,25 @@ a, .btn-link {
     }
 }
 
+/*@media (min-width: 640.98px) {
+    .navbar-toggler, .navbar-toggler-wrapper {
+        display: none;
+    }
+
+    .flex-nav {
+        flex-direction: column;
+        display: flex;
+    }
+
+    .collapse {*/
+        /* Never collapse the sidebar for wide screens */
+        /*display: block;
+    }
+
+    .toggle {
+        display: block
+    }
+}*/
+
+
 

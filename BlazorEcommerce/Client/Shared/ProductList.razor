@@ -1,6 +1,31 @@
 ﻿@inject IProductService productService;
 @implements IDisposable
 
+<style>
+    
+.media-img{
+    max-height: 200px;
+    max-width: 200px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    transition: transform .2s;
+
+}
+
+.media-img:hover{
+    transform: scale(1.1);
+}
+
+.media-img-wrapper{
+    width: 200px;
+    text-align: center;
+}
+
+.page-selection{
+    margin-right: 15px;
+    margin-bottom: 30px;
+}
+</style>
 
 @if (productService.Products == null || productService.Products.Count == 0)
 {
