@@ -42,7 +42,7 @@
                 new Category
                 {
                     Id = 3,
-                    Name = "Video Gmaes",
+                    Name = "Video Games",
                     Url = "video-games"
                 }
 
@@ -279,5 +279,6 @@
         public DbSet<Category> Categories { get; set; }
         public DbSet<ProductType> ProductTypes { get; set; }
         public DbSet<ProductVariant> ProductVariants { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 }
