@@ -10,6 +10,16 @@ namespace BlazorEcommerce.Server.Services.AuthService
             _context = context;
         }
 
+        public async Task<ServiceResponse<string>> Login(string email, string password)
+        {
+            var response =  new ServiceResponse<string>()
+            {
+                Data = "Token"
+            };
+
+            return response;
+        }
+
         //for user registration
         public async Task<ServiceResponse<int>> Register(User user, string password)
         {
