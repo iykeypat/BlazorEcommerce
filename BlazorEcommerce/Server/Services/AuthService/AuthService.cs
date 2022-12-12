@@ -1,13 +1,20 @@
-﻿using System.Security.Cryptography;
+﻿using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace BlazorEcommerce.Server.Services.AuthService
 {
     public class AuthService : IAuthService
     {
         DataContext _context;
-        public AuthService(DataContext context)
+        IConfiguration _configuration;
+
+        public AuthService(DataContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
 
@@ -28,11 +35,31 @@ namespace BlazorEcommerce.Server.Services.AuthService
                 response.Message = "Wrong password.";
             }
             else { 
-                response.Data = "Token";
+                response.Data = CreateToken(user);
             }
             
  
             return response;
+        }
+
+        private string CreateToken(User user)
+        {
+            List<Claim> claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.Email)
+            };
+
+            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
+            var creds = new SigningCredentials(key,SecurityAlgorithms.HmacSha512Signature);
+            var token = new JwtSecurityToken(
+                claims: claims,
+                expires: DateTime.Now.AddDays(1),
+                signingCredentials: creds
+                );
+            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+
+            return jwt;
         }
 
         //verifies password hash
