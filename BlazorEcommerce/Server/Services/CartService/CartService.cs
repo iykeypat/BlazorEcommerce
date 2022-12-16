@@ -9,6 +9,7 @@
             _context = context;
         }
 
+        //handles the retreival of products found in the cart from the db
         public async Task<ServiceResponse<List<CartProductResponse>>> GetCartProducts(List<CartItem> cartItems)
         {
             var result = new ServiceResponse<List<CartProductResponse>>
@@ -43,6 +44,17 @@
                 result.Data.Add(cartProduct);
             }
             return result;
+        }
+
+
+        //handles the storage of products found in the cart in the DB
+        public async Task<ServiceResponse<List<CartProductResponse>>> StoreCartItems(List<CartItem> cartItems, int userId)
+        {
+            cartItems.ForEach(cartItem => { cartItem.UserId = userId; });
+            _context.CartItems.AddRange(cartItems);
+            await _context.SaveChangesAsync();
+
+            return await GetCartProducts(await _context.CartItems.Where(ci => ci.UserId== userId).ToListAsync());
         }
     }
 }
