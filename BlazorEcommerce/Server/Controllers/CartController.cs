@@ -33,5 +33,12 @@ namespace BlazorEcommerce.Server.Controllers
 
             return Ok(result);
         }
+
+        //Gets the total number of cartitems from the DB
+        [HttpGet("count")]
+        public async Task<ActionResult<ServiceResponse<int>>> GetCartItemsCount()
+        {
+            return await _cartService.GetCartItemsCount();
+        }
     }
 }
