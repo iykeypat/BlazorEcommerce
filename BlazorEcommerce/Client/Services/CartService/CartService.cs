@@ -51,7 +51,7 @@ namespace BlazorEcommerce.Client.Services.CartService
 
 
             await _localStorage.SetItemAsync("cart", cart);
-            OnChange.Invoke();
+            await GetCartItemsCount();
         }
 
         private async Task<bool> IsUserAuthenticated()
@@ -62,11 +62,10 @@ namespace BlazorEcommerce.Client.Services.CartService
         //gets all items added to the cart
         public async Task<List<CartItem>> GetCartItems()
         {
+            await GetCartItemsCount();
+
             var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart");
-            if (cart == null)
-            {
-                cart = new List<CartItem>();
-            }
+            cart ??= new List<CartItem>();
 
             return cart;
         }
@@ -96,7 +95,7 @@ namespace BlazorEcommerce.Client.Services.CartService
             {
                 cart.Remove(cartItem);
                 await _localStorage.SetItemAsync("cart", cart);
-                OnChange.Invoke();
+                await GetCartItemsCount();
             }
             
         }
@@ -135,6 +134,27 @@ namespace BlazorEcommerce.Client.Services.CartService
                 await _localStorage.SetItemAsync("cart", cart);
             }
 
+        }
+
+
+        //This returns the number of items in the cart 
+        public async Task GetCartItemsCount()
+        {
+            if (await IsUserAuthenticated())
+            {
+                var result = await _httpClient.GetFromJsonAsync<ServiceResponse<int>>("api/cart/count");
+                var count = result.Data;
+
+                await _localStorage.SetItemAsync<int>("cartItemsCount",count);
+                
+            }
+            else
+            {
+                var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart");
+                await _localStorage.SetItemAsync<int>("cartItemsCount", cart != null ? cart.Count: 0);
+            }
+
+            OnChange.Invoke();
         }
     }
 }
