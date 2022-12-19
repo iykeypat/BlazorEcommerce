@@ -60,7 +60,7 @@ namespace BlazorEcommerce.Server.Services.CartService
             _context.CartItems.AddRange(cartItems);
             await _context.SaveChangesAsync();
 
-            return await GetCartProducts(await _context.CartItems.Where(ci => ci.UserId== GetUserId()).ToListAsync());
+            return await GetDbCartProducts();
         }
 
 
@@ -70,6 +70,13 @@ namespace BlazorEcommerce.Server.Services.CartService
             var count = (await _context.CartItems.Where(ci => ci.UserId == GetUserId()).ToListAsync()).Count;
 
             return new ServiceResponse<int> { Data = count };
+        }
+
+
+        //Gets the products in the cart from the DB
+        public async Task<ServiceResponse<List<CartProductResponse>>> GetDbCartProducts()
+        {
+            return await GetCartProducts(await _context.CartItems.Where(ci => ci.UserId == GetUserId()).ToListAsync());
         }
     }
 }
