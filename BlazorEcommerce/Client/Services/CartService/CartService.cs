@@ -59,26 +59,33 @@ namespace BlazorEcommerce.Client.Services.CartService
             return (await _authStateProvider.GetAuthenticationStateAsync()).User.Identity.IsAuthenticated;
         }
 
-        //gets all items added to the cart
-        public async Task<List<CartItem>> GetCartItems()
-        {
-            await GetCartItemsCount();
-
-            var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart");
-            cart ??= new List<CartItem>();
-
-            return cart;
-        }
 
         //Gets list of products in the cart
         public async Task<List<CartProductResponse>> GetCartProducts()
         {
-            var cartItems = await _localStorage.GetItemAsync<List<CartItem>>("cart");
-            var response = await _httpClient.PostAsJsonAsync("api/cart/products", cartItems);
+            if (await IsUserAuthenticated())
+            {
+                var response = await _httpClient.GetFromJsonAsync<ServiceResponse<List<CartProductResponse>>>("api/cart/products");
 
-            var cartProducts = await response.Content.ReadFromJsonAsync<ServiceResponse<List<CartProductResponse>>>();
+                return response.Data;
+            }
+            else
+            {
 
-            return cartProducts.Data;
+                var cartItems = await _localStorage.GetItemAsync<List<CartItem>>("cart");
+
+                if (cartItems ==null)
+                {
+                    return new List<CartProductResponse>();
+                }
+
+
+                var response = await _httpClient.PostAsJsonAsync("api/cart/products", cartItems);
+                var cartProducts = await response.Content.ReadFromJsonAsync<ServiceResponse<List<CartProductResponse>>>();
+
+                return cartProducts.Data;
+            }
+
         }
 
         //remove item from cart
