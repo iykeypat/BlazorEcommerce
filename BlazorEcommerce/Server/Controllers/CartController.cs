@@ -58,5 +58,15 @@ namespace BlazorEcommerce.Server.Controllers
 
             return Ok(result);
         }
+
+
+        //Adds product to the cartItems the DB
+        [HttpPut("update-quantity")]
+        public async Task<ActionResult<ServiceResponse<bool>>> UpdateQuantity(CartItem cartItem)
+        {
+            var result = await _cartService.UpdateQuantity(cartItem);
+
+            return Ok(result);
+        }
     }
 }
