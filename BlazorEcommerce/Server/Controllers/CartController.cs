@@ -49,5 +49,14 @@ namespace BlazorEcommerce.Server.Controllers
 
             return Ok(result);
         }
+
+        //Adds product to the cartItems the DB
+        [HttpPost("addproducts")]
+        public async Task<ActionResult<ServiceResponse<bool>>> AddToCart(CartItem cartItem)
+            {
+            var result = await _cartService.AddToCart(cartItem);
+
+            return Ok(result);
+        }
     }
 }
