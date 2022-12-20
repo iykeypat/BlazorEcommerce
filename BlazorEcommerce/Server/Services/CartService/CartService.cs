@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using BlazorEcommerce.Shared;
+using System.Security.Claims;
 
 namespace BlazorEcommerce.Server.Services.CartService
 {
@@ -84,9 +85,10 @@ namespace BlazorEcommerce.Server.Services.CartService
         public async Task<ServiceResponse<bool>> AddToCart(CartItem cartItem)
         {
             cartItem.UserId = GetUserId();
-            var sameItem = await _context.CartItems.FirstOrDefaultAsync(ci => ci.ProductId == cartItem.ProductId && ci.ProductTypeId == cartItem.ProductTypeId && ci.UserId == cartItem.UserId);
 
-            if (sameItem != null)
+            var sameItem = await _context.CartItems.FirstOrDefaultAsync(ci => ci.ProductId == cartItem.ProductId && ci.ProductTypeId == cartItem.ProductTypeId && ci.UserId == GetUserId());
+
+            if (sameItem == null)
             {
                 _context.CartItems.Add(cartItem);
             }
@@ -94,7 +96,7 @@ namespace BlazorEcommerce.Server.Services.CartService
             {
                 sameItem.Quantity += cartItem.Quantity;
             }
-
+              
             await _context.SaveChangesAsync();
 
             return new ServiceResponse<bool> { Data = true };
@@ -104,20 +106,35 @@ namespace BlazorEcommerce.Server.Services.CartService
         //this method updates the quantity of items in the cart in the DB
         public async Task<ServiceResponse<bool>> UpdateQuantity(CartItem cartItem)
         {
-            var dbCartItem = await _context.CartItems.FirstOrDefaultAsync(ci => ci.ProductId == cartItem.ProductId && ci.ProductTypeId == cartItem.ProductTypeId && ci.UserId == cartItem.UserId);
+            var dbCartItem = await _context.CartItems.FirstOrDefaultAsync(ci => ci.ProductId == cartItem.ProductId && ci.ProductTypeId == cartItem.ProductTypeId && ci.UserId == GetUserId());
 
-            if (dbCartItem != null)
+            if (dbCartItem == null)
             {
                 return new ServiceResponse<bool> { Data = false, Message = "Cart Item does not exist", Success = false };
             }
 
-            dbCartItem.Quantity += cartItem.Quantity;
+            dbCartItem.Quantity = cartItem.Quantity;
             await _context.SaveChangesAsync();
 
             return new ServiceResponse<bool> { Data = true, Message = "Cart Item does was found", Success = true };
 
+        }
 
 
+        //removes an item from cart in the db
+        public async Task<ServiceResponse<bool>> RemoveItemFromCart(int productId, int productTypeId)
+        {
+            var dbCartItem = await _context.CartItems.FirstOrDefaultAsync(ci => ci.ProductId == productId && ci.ProductTypeId == productTypeId && ci.UserId == GetUserId());
+
+            if (dbCartItem == null)
+            {
+                return new ServiceResponse<bool> { Data = false, Message = "Cart Item does not exist", Success = false };
+            }
+
+            _context.CartItems.Remove(dbCartItem);
+            await _context.SaveChangesAsync();
+
+            return new ServiceResponse<bool> { Data = true };
         }
     }
 }

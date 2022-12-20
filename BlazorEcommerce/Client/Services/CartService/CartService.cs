@@ -91,20 +91,27 @@ namespace BlazorEcommerce.Client.Services.CartService
         //remove item from cart
         public async Task RemoveProductFromCart(int productId, int productTypeId)
         {
-            var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart");
-            if (cart == null)
+            if (await IsUserAuthenticated())
             {
-                return;
+                await _httpClient.DeleteAsync($"api/cart/delete/{productId}/{productTypeId}");
             }
-            var cartItem = cart.Find(item => item.ProductId == productId && item.ProductTypeId == productTypeId);
+            else
+            {
+                var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart");
 
-            if (cartItem != null)
-            {
-                cart.Remove(cartItem);
-                await _localStorage.SetItemAsync("cart", cart);
-                await GetCartItemsCount();
+                if (cart == null)
+                {
+                    return;
+                }
+                var cartItem = cart.Find(item => item.ProductId == productId && item.ProductTypeId == productTypeId);
+
+                if (cartItem != null)
+                {
+                    cart.Remove(cartItem);
+                    await _localStorage.SetItemAsync("cart", cart);
+                }
             }
-            
+
         }
 
         //this stores the cartitems in the Db
@@ -137,7 +144,7 @@ namespace BlazorEcommerce.Client.Services.CartService
                     ProductTypeId = product.ProductTypeId
                 };
 
-                await _httpClient.PostAsJsonAsync("api/cart/update-quantity", request);
+                await _httpClient.PutAsJsonAsync("api/cart/update-quantity", request);
             }
             else
             {
@@ -157,8 +164,7 @@ namespace BlazorEcommerce.Client.Services.CartService
             }
         }
 
-           
-
+             
 
         //This returns the number of items in the cart 
         public async Task GetCartItemsCount()
