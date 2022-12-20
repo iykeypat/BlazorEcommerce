@@ -17,6 +17,8 @@ namespace BlazorEcommerce.Server.Services.OrderService
 
         private int GetUserId() => int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
 
+
+        //For placing order in view of cashout
         public async Task<ServiceResponse<bool>> PlaceOrder()
         {
             var products = (await _cartService.GetDbCartProducts()).Data;
@@ -44,6 +46,7 @@ namespace BlazorEcommerce.Server.Services.OrderService
             };
 
             _context.Orders.Add(order);
+            _context.CartItems.RemoveRange(_context.CartItems.Where(ci => ci.UserId == GetUserId()));
             await _context.SaveChangesAsync();
 
             return new ServiceResponse<bool> { Data= true };
