@@ -15,17 +15,53 @@ namespace BlazorEcommerce.Server.Services.OrderService
             _authService = authService;
         }
 
+        public async Task<ServiceResponse<OrderDetailsResponse>> GetOrderDetails(int orderId)
+        {
+            var response = new ServiceResponse<OrderDetailsResponse>();
+            var order = await _context.Orders.Include(o => o.OrderItems).ThenInclude(oi => oi.Product).Include(o => o.OrderItems).ThenInclude(oi => oi.ProductType).Where(
+                o => o.UserId == _authService.GetUserId() && o.Id == orderId).OrderByDescending(o => o.OrderDate).FirstOrDefaultAsync();
+
+            if (order == null)
+            {
+                response.Success = false;
+                response.Message = "Order not found";
+                return response;
+            }
+
+            var orderDetailsResponse = new OrderDetailsResponse
+            {
+                OrderDate = order.OrderDate,
+                TotalPrice = order.TotalPrice,
+                Products = new List<OrderDetailsProductResponse>()
+            };
+
+            order.OrderItems.ForEach(o => orderDetailsResponse.Products.Add(new OrderDetailsProductResponse
+            {
+                ProductId = o.ProductId,
+                ImageUrl = o.Product.ImageUrl,
+                ProductType = o.ProductType.Name,
+                Quantity = o.Quantity,
+                Title = o.Product.Title,
+                TotalPrice= o.TotalPrice,
+            }));
+
+            response.Data = orderDetailsResponse;
+
+            return response;
+        }
+
         public async Task<ServiceResponse<List<OrderOverviewResponse>>> GetOrders()
         {
             var response = new ServiceResponse<List<OrderOverviewResponse>>();
             var orders = await _context.Orders.Include(o => o.OrderItems).ThenInclude(oi => oi.Product).Where(o => o.UserId == _authService.GetUserId()).OrderByDescending(o => o.OrderDate).ToListAsync();
             var orderResponse = new List<OrderOverviewResponse>();
 
-            orders.ForEach(o => orderResponse.Add(new OrderOverviewResponse {
+            orders.ForEach(o => orderResponse.Add(new OrderOverviewResponse
+            {
                 Id = o.Id,
-                OrderDate= o.OrderDate,
-                TotalPrice=o.TotalPrice,
-                Product = o.OrderItems.Count >1 ? $"{o.OrderItems.First().Product.Title} and " + $"{o.OrderItems.Count -1} more..." : o.OrderItems.First().Product.Title,
+                OrderDate = o.OrderDate,
+                TotalPrice = o.TotalPrice,
+                Product = o.OrderItems.Count > 1 ? $"{o.OrderItems.First().Product.Title} and " + $"{o.OrderItems.Count - 1} more..." : o.OrderItems.First().Product.Title,
                 ProductImageUrl = o.OrderItems.First().Product.ImageUrl
             }));
 
@@ -54,10 +90,10 @@ namespace BlazorEcommerce.Server.Services.OrderService
 
             var order = new Order
             {
-                UserId= _authService.GetUserId(),
-                OrderDate= DateTime.Now,
-                TotalPrice= totalPrice,
-                OrderItems= orderItems
+                UserId = _authService.GetUserId(),
+                OrderDate = DateTime.Now,
+                TotalPrice = totalPrice,
+                OrderItems = orderItems
             };
 
             _context.Orders.Add(order);
@@ -65,7 +101,7 @@ namespace BlazorEcommerce.Server.Services.OrderService
 
             await _context.SaveChangesAsync();
 
-            return new ServiceResponse<bool> { Data= true };
+            return new ServiceResponse<bool> { Data = true };
         }
     }
 }
