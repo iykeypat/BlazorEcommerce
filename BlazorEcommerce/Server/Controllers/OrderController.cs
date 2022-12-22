@@ -32,7 +32,7 @@ namespace BlazorEcommerce.Server.Controllers
             return Ok(result);
         }
 
-        [HttpGet("orderId")]
+        [HttpGet("orders/{orderId}")]
         public async Task<ActionResult<ServiceResponse<OrderDetailsResponse>>> GetOrderDetails(int orderId)
         {
             var result = await _orderService.GetOrderDetails(orderId);

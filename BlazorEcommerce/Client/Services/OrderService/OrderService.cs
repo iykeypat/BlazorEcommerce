@@ -15,6 +15,15 @@ namespace BlazorEcommerce.Client.Services.OrderService
             _navigationManager = navigationManager;
         }
 
+        //Returns details of a placed order
+        public async Task<OrderDetailsResponse> GetOrderDetails(int orderId)
+        {
+            var result = await _httpClient.GetFromJsonAsync<ServiceResponse<OrderDetailsResponse>>($"api/order/orders/{orderId}");
+
+            return result.Data;
+        }
+
+        //returns all orders placed by a user
         public async Task<List<OrderOverviewResponse>> GetOrders()
         {
             var result = await _httpClient.GetFromJsonAsync<ServiceResponse<List<OrderOverviewResponse>>>("api/order/get-orders");
@@ -22,6 +31,8 @@ namespace BlazorEcommerce.Client.Services.OrderService
             return result.Data;
         }
 
+
+        //allows a user to place orders towards checkout
         public async Task PlaceOrder()
         {
             if (await IsUserAuthenticated())

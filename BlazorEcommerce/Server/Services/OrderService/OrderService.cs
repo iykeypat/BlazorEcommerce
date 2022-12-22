@@ -18,6 +18,7 @@ namespace BlazorEcommerce.Server.Services.OrderService
         public async Task<ServiceResponse<OrderDetailsResponse>> GetOrderDetails(int orderId)
         {
             var response = new ServiceResponse<OrderDetailsResponse>();
+
             var order = await _context.Orders.Include(o => o.OrderItems).ThenInclude(oi => oi.Product).Include(o => o.OrderItems).ThenInclude(oi => oi.ProductType).Where(
                 o => o.UserId == _authService.GetUserId() && o.Id == orderId).OrderByDescending(o => o.OrderDate).FirstOrDefaultAsync();
 
