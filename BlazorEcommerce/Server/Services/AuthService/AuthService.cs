@@ -149,7 +149,12 @@ namespace BlazorEcommerce.Server.Services.AuthService
             };
         }
 
+        //returns userId
         public int GetUserId() => int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+
+        //returns user email
+        public string GetUserEmail() => _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Name);
 
     }
 }
