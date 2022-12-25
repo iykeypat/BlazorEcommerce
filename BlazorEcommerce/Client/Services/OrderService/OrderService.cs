@@ -33,15 +33,17 @@ namespace BlazorEcommerce.Client.Services.OrderService
 
 
         //allows a user to place orders towards checkout
-        public async Task PlaceOrder()
+        public async Task<string> PlaceOrder()
         {
             if (await IsUserAuthenticated())
             {
-                await _httpClient.PostAsync("api/order/place-order", null);
+                var result = await _httpClient.PostAsync("api/payment/checkout", null);
+                var url = await result.Content.ReadAsStringAsync();
+                return url;
             }
             else
             {
-                _navigationManager.NavigateTo("login");
+                return "login";
             }
         }
 
