@@ -19,7 +19,7 @@ namespace BlazorEcommerce.Server.Services.PaymentService
 
 
 
-        //
+        //create and return the checkout session for stripe  
         public async Task<Session> CreateCheckOutSession()
         {
             var products = (await _cartService.GetDbCartProducts()).Data;
@@ -39,6 +39,20 @@ namespace BlazorEcommerce.Server.Services.PaymentService
                 },
                 Quantity= p.Quantity,
             }));
+
+            var options = new SessionCreateOptions
+            {
+                CustomerEmail = _authService.GetUserEmail(),
+                PaymentMethodTypes = new List<string> { "card"},
+                LineItems= lineItems,
+                Mode = "payment",
+                SuccessUrl = "https://localhost:7209/order-success",
+                CancelUrl = "https://localhost:7209/cart"
+            };
+
+            var service = new SessionService();
+            Session session = service.Create(options);
+            return session;
         }
     }
 }

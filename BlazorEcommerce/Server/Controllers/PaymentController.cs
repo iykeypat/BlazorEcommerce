@@ -8,7 +8,7 @@ namespace BlazorEcommerce.Server.Controllers
     [ApiController]
     public class PaymentController : ControllerBase
     {
-        IPaymentService _paymentService;
+        private readonly IPaymentService _paymentService;
 
         public PaymentController(IPaymentService paymentService)
         {
