@@ -10,17 +10,35 @@ namespace BlazorEcommerce.Server.Controllers
     {
         private readonly IPaymentService _paymentService;
 
+        //ctor
         public PaymentController(IPaymentService paymentService)
         {
             _paymentService = paymentService;
         }
 
+
+        //returns url for stripe payment
         [HttpPost("checkout"),Authorize]
         public async Task<ActionResult<string>> CreateCheckOutSession()
         {
             var session = await _paymentService.CreateCheckOutSession();
 
             return Ok(session.Url);
+        }        
+        
+        [HttpPost]
+        public async Task<ActionResult<ServiceResponse<bool>>> FulfillOrder()
+        {
+            var response = await _paymentService.FulfillOrder(Request);
+
+            if (!response.Success)
+            {
+                return BadRequest(response.Message);
+            }
+            else
+            {
+                return Ok(response);
+            }
         }
     }
 }

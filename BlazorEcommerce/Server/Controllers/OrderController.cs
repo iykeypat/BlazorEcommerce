@@ -15,15 +15,6 @@ namespace BlazorEcommerce.Server.Controllers
         }
 
 
-        //for placing order in view of check out
-        [HttpPost("place-order")]
-        public async Task<ActionResult<ServiceResponse<bool>>> PlaceOrder()
-        {
-            var result = await _orderService.PlaceOrder();
-
-            return Ok(result);
-        }
-
         [HttpGet("get-orders")]
         public async Task<ActionResult<ServiceResponse<List<OrderOverviewResponse>>>> GetOrders()
         {

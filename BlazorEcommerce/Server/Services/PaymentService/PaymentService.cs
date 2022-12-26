@@ -1,5 +1,6 @@
 ﻿using Stripe;
 using Stripe.Checkout;
+using System.Security.Cryptography.Xml;
 
 namespace BlazorEcommerce.Server.Services.PaymentService
 {
@@ -9,10 +10,13 @@ namespace BlazorEcommerce.Server.Services.PaymentService
         IAuthService _authService;
         IOrderService _orderService;
 
-        public PaymentService(ICartService cartService, IAuthService authService, IOrderService orderService) {
+        const string secret = "whsec_053a08c80f8d7ecddc523e628931daf7232c5637a72043f5c8d47a00f77e2393";
+
+        public PaymentService(ICartService cartService, IAuthService authService, IOrderService orderService)
+        {
 
             StripeConfiguration.ApiKey = "sk_test_51MIx0uB77Y3LjlzdfFcfJPHfn9aI676GELezaX9hlm7jMwQY8jBfVnpEClQLKrr6jcf0cZVbX0huYNkXFANCOs8V006XS3Xoh3";
-            _cartService = cartService; 
+            _cartService = cartService;
             _authService = authService;
             _orderService = orderService;
         }
@@ -37,14 +41,14 @@ namespace BlazorEcommerce.Server.Services.PaymentService
                         Images = new List<string> { p.ImageUrl }
                     }
                 },
-                Quantity= p.Quantity,
+                Quantity = p.Quantity,
             }));
 
             var options = new SessionCreateOptions
             {
                 CustomerEmail = _authService.GetUserEmail(),
-                PaymentMethodTypes = new List<string> { "card"},
-                LineItems= lineItems,
+                PaymentMethodTypes = new List<string> { "card" },
+                LineItems = lineItems,
                 Mode = "payment",
                 SuccessUrl = "https://localhost:7209/order-success",
                 CancelUrl = "https://localhost:7209/cart"
@@ -53,6 +57,31 @@ namespace BlazorEcommerce.Server.Services.PaymentService
             var service = new SessionService();
             Session session = service.Create(options);
             return session;
+        }
+
+        public async Task<ServiceResponse<bool>> FulfillOrder(HttpRequest request)
+        {
+            var json = await new StreamReader(request.Body).ReadToEndAsync();
+
+            try
+            {
+                var stripeEvent = EventUtility.ConstructEvent(json, request.Headers["Stripe-Signature"], secret);
+
+                if (stripeEvent.Type == Events.CheckoutSessionCompleted)
+                {
+                    var session = stripeEvent.Data.Object as Session;
+                    var user = await _authService.GetUserByEmail(session.CustomerEmail);
+
+                    await _orderService.PlaceOrder(user.Id);
+                }
+
+                return new ServiceResponse<bool> { Data= true };
+            }
+            catch (StripeException e)
+            {
+
+                return new ServiceResponse<bool> { Data = false, Success = false, Message = e.Message };
+            }
         }
     }
 }

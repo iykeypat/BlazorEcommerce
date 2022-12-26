@@ -156,5 +156,11 @@ namespace BlazorEcommerce.Server.Services.AuthService
         //returns user email
         public string GetUserEmail() => _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Name);
 
+
+        //returns a particular user based on the given email
+        public async Task<User> GetUserByEmail(string email)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower().Equals(email.ToLower()));
+        }
     }
 }
