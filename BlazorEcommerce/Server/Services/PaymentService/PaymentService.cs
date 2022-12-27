@@ -47,7 +47,10 @@ namespace BlazorEcommerce.Server.Services.PaymentService
             var options = new SessionCreateOptions
             {
                 CustomerEmail = _authService.GetUserEmail(),
-                PaymentMethodTypes = new List<string> { "card" },
+                ShippingAddressCollection = new SessionShippingAddressCollectionOptions { 
+                    AllowedCountries = new List<string> {"US","UA", "NG" }
+                },
+                //PaymentMethodTypes = new List<string> { "card" },
                 LineItems = lineItems,
                 Mode = "payment",
                 SuccessUrl = "https://localhost:7209/order-success",
