@@ -1,6 +1,7 @@
 ﻿@page "/cart"
 @inject ICartService CartService
 @inject IOrderService OrderService
+@inject IAuthService Authservice
 @inject NavigationManager NavigationManager
 
 <PageTitle>Shopping Cart</PageTitle>
@@ -36,15 +37,25 @@ else
         </div>
     </div>
 
+    if (isAuthenticated)
+    {
+        <div>
+            <h5>Delivery Address</h5>
+            <AddressForm></AddressForm>
+        </div>
+    }
+
     <button @onclick="PlaceOrder" class="btn btn-success float-end mt-1">Checkout</button>
 }
 
 @code {
     List<CartProductResponse> cartProducts = null;
     string Message = "Loading cart...";
+    bool isAuthenticated = false; //A flag to monitor if a user is authenticated
 
     protected override async Task OnInitializedAsync()
     {
+        isAuthenticated = await Authservice.IsUserAuthenticated();
         await LoadCart();
     }
 
