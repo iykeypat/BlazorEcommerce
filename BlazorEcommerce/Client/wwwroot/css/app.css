@@ -7,16 +7,38 @@ html, body {
 h1:focus {
     outline: none;
 }
-
-a, .btn-link {
+.btn-link {
     color: #623f3f;
 }
 
-.btn-primary {
-    color: #b32121;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
+a{
+    color: #feb20a !important;
 }
+
+a:hover{
+    color:darkred !important
+}
+
+a:active{
+    color:darkred !important
+}
+
+.btn-primary {
+    color: white;
+    background-color: #feb20a;
+    border-color: #b78007;
+}
+
+    .btn-primary:hover {
+        background-color: #dc9907 !important;
+        border-color: #dc9907 !important;
+    }
+
+    .btn-primary:focus {
+        color: white;
+        background-color: #feb20a;
+        border-color: #b78007;
+    }
 
 .content {
     padding-top: 1.1rem;
@@ -67,6 +89,8 @@ a, .btn-link {
     color: green;
 }
 
+
+
 .media {
     display: flex;
     align-items: flex-start;
@@ -76,31 +100,84 @@ a, .btn-link {
     flex: 1;
 }
 
-@media (max-width: 1023.98) {
+/*@media (max-width: 1023.98) {
     .media {
         flex-direction: column;
     }
+}*/
+
+.top-row {
+    background-color: black;
+    display: flex;
+    justify-content: flex-end;
+    height: 3.5rem;
+    align-items: center;
 }
 
-/*@media (min-width: 640.98px) {
-    .navbar-toggler, .navbar-toggler-wrapper {
-        display: none;
+.page {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+.nav-bar {
+    background-color: black;
+
+}
+
+
+
+@media (max-width: 640.98px) {
+    .top-row:not(.auth) {
+        /*display: none;*/
     }
 
-    .flex-nav {
-        flex-direction: column;
+    .top-row.auth {
+        justify-content: space-between;
+    }
+
+
+}
+
+/* for big screen*/
+@media (min-width: 641px) {
+    .page {
+        flex-direction: row;
+    }
+
+    .show-button {
+        display: none
+    }
+
+    .nav-bar {
+        position: sticky;
+        top: 0;
+        z-index: 1;
         display: flex;
     }
 
-    .collapse {*/
-        /* Never collapse the sidebar for wide screens */
-        /*display: block;
+    .nav-bar-menu {
+        display: flex;
+        float: right;
     }
 
-    .toggle {
-        display: block
+
+        .top-row.auth {
+            flex: 1;
+            text-align: right;
+            width: 0;
+        }
+
+    .top-row, article {
+        padding-left: 2rem !important;
+        padding-right: 1.5rem !important;
     }
-}*/
+}
+
 
 
 

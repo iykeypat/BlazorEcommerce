@@ -25,10 +25,11 @@ img:hover{
     border: 1px solid lightgray;
     border-radius: 10px; 
     max-width: 200px;
+    background-color:dimgray;
 
 }
 
-@media (max-width: 1023.98px{
+@media (max-width: 1023.98px){
     .container{
         justify-content: flex-start;
     }
