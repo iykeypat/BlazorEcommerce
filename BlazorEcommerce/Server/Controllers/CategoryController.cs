@@ -35,7 +35,7 @@ namespace BlazorEcommerce.Server.Controllers
         }
 
         //method to delete a category given the Id
-        [HttpDelete("delete-category"), Authorize(Roles = "Admin")]
+        [HttpDelete("delete-category/{id}"), Authorize(Roles = "Admin")]
         public async Task<ActionResult<ServiceResponse<List<Category>>>> DeleteCategory(int id)
         {
             var categories = await _categoryService.DeleteCategory(id);

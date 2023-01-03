@@ -71,9 +71,22 @@
 
 
         //method to update the content of a given category
-        public Task<ServiceResponse<List<Category>>> UpdateCategory(Category category)
+        public async Task<ServiceResponse<List<Category>>> UpdateCategory(Category category)
         {
-            throw new NotImplementedException();
+            var dbCategory = await GetCategoryById(category.Id);
+
+            if (dbCategory == null)
+            {
+                return new ServiceResponse<List<Category>> { Success = false, Message = "Category not found" };
+            }
+
+            dbCategory.Name = category.Name;
+            dbCategory.Url = category.Url;
+            dbCategory.Visible = category.Visible;
+
+            await _context.SaveChangesAsync();
+
+            return await GetAdminCategories();
         }
     }
 }
