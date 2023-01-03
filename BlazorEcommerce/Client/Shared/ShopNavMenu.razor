@@ -50,11 +50,11 @@
     protected override async Task OnInitializedAsync()
     {
         await CategoryService.GetCategories();
-        //CategoryService.OnChange += StateHasChanged;
+        CategoryService.OnChange += StateHasChanged;
     }
 
     public void Dispose()
     {
-        //CategoryService.OnChange -= StateHasChanged;
+        CategoryService.OnChange -= StateHasChanged;
     }
 }
