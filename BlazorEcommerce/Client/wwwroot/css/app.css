@@ -100,11 +100,6 @@ a:active{
     flex: 1;
 }
 
-/*@media (max-width: 1023.98) {
-    .media {
-        flex-direction: column;
-    }
-}*/
 
 .top-row {
     background-color: black;
@@ -129,7 +124,7 @@ main {
 
 }
 
-/*CSS For category page*/
+/*CSS For category,product type page*/
 .big-checkbox{
     transform: scale(2,2);
 }
@@ -156,7 +151,9 @@ main {
     text-align: center;
 }
 
-/*End of CSS for category page*/
+
+/*CSS for product type page*/
+
 
 
 /*For small screens*/
@@ -207,6 +204,11 @@ main {
     }
 }
 
+/*@media (max-width: 1023.98) {
+    .media {
+        flex-direction: column;
+    }
+}*/
 
 
 
