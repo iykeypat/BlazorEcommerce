@@ -20,5 +20,36 @@
 
             ProductTypes = result.Data;
         }
+
+        //This method is called when admin wants to add a new product type
+        public async Task AddProductType(ProductType productType)
+        {
+            var response = await _httpClient.PostAsJsonAsync("api/producttype", productType);
+
+            ProductTypes = (await response.Content.ReadFromJsonAsync<ServiceResponse<List<ProductType>>>()).Data;
+
+            OnChange.Invoke(); 
+        }
+
+        //This method is called when admin wants to make changes to existing product type
+        public async Task UpdateProductType(ProductType productType)
+        {
+            var response = await _httpClient.PutAsJsonAsync("api/producttype", productType);
+
+            ProductTypes = (await response.Content.ReadFromJsonAsync<ServiceResponse<List<ProductType>>>()).Data;
+
+            OnChange.Invoke();
+        }
+
+        //This method is called when admin wants to create a new product type
+        public ProductType CreateNewProductType()
+        {
+            var newProductType = new ProductType { IsNew = true, Editing = true};
+
+            ProductTypes.Add(newProductType);
+            OnChange.Invoke();
+
+            return newProductType;
+        }
     }
 }
