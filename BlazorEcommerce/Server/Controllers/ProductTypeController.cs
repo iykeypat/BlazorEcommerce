@@ -24,5 +24,24 @@ namespace BlazorEcommerce.Server.Controllers
 
             return Ok(response);
         }
+
+        //This API endpoint is called when admin wants to add a new product type
+        [HttpPost]
+        public async Task<ActionResult<ServiceResponse<List<ProductType>>>> AddProductType(ProductType productType)
+        {
+            var response = await _productTypeService.AddProductType(productType);
+
+            return Ok(response);
+        }
+
+
+        //This API endpoint is called when admin wants to update an existing product type
+        [HttpPut]
+        public async Task<ActionResult<ServiceResponse<List<ProductType>>>> UpdateProductType(ProductType productType)
+        {
+            var response = await _productTypeService.UpdateProductType(productType);
+
+            return Ok(response);
+        }
     }
 }
