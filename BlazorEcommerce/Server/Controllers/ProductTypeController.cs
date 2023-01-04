@@ -9,5 +9,20 @@ namespace BlazorEcommerce.Server.Controllers
     [Authorize(Roles ="Admin")]
     public class ProductTypeController : ControllerBase
     {
+        IProductTypeService _productTypeService;
+
+        public ProductTypeController(IProductTypeService productTypeService)
+        {
+            _productTypeService = productTypeService;
+        }
+
+        //Returns all product types for admin's view
+        [HttpGet]
+        public async Task<ActionResult<ServiceResponse<List<ProductType>>>> GetProductTypes()
+        {
+            var response = await _productTypeService.GetProductTypes();
+
+            return Ok(response);
+        }
     }
 }
