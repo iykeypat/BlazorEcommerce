@@ -1,5 +1,7 @@
 ﻿@page "/admin/product-types"
 @inject IProductTypeService ProductTypeService
+@implements IDisposable
+@attribute [Authorize(Roles ="Admin")]
 
 <h3>Product Types</h3>
 
@@ -43,9 +45,17 @@
 @code {
     ProductType editingProductType = null;
 
+    //the code in this method runs automatically when this page is loaded
     protected override async Task OnInitializedAsync()
     {
         await ProductTypeService.GetProductTypes();
+        ProductTypeService.OnChange += StateHasChanged;
+    }
+
+    //This method resets state change in readiness for another time
+    public void Dispose()
+    {
+        ProductTypeService.OnChange -= StateHasChanged;
     }
 
     //This method is called when admin wants to edit product type
@@ -58,12 +68,20 @@
     //this method is called when admin wants to create a new product type
     private void CreateNewProductType()
     {
-
+        editingProductType = ProductTypeService.CreateNewProductType();
     }
 
     //this method is called when admin wants to update an existing product type
     private async Task UpdateProductType()
     {
-        
+        if (editingProductType.IsNew)
+        {
+            await ProductTypeService.AddProductType(editingProductType);
+        } else
+        {
+            await ProductTypeService.UpdateProductType(editingProductType);
+        }
+
+        editingProductType = new ProductType();
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace BlazorEcommerce.Server.Services.ProductTypeService
+﻿using BlazorEcommerce.Shared;
+
+namespace BlazorEcommerce.Server.Services.ProductTypeService
 {
     public class ProductTypeService : IProductTypeService
     {
@@ -13,8 +15,8 @@
         //Adds new product type to the DB
         public async Task<ServiceResponse<List<ProductType>>> AddProductType(ProductType productType)
         {
+            productType.Editing = productType.IsNew = false;
             _context.ProductTypes.Add(productType);
-
             await _context.SaveChangesAsync();
 
             return await GetProductTypes();
