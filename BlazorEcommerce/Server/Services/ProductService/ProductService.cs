@@ -12,6 +12,19 @@ namespace BlazorEcommerce.Server.Services.ProductService
             this.context = context;
         }
 
+        //returns all products for admin view whether visible or not
+        public async Task<ServiceResponse<List<Product>>> GetAdminProducts()
+        {
+            var response = new ServiceResponse<List<Product>>
+            {
+                Data = await context.Products.Where(p => !p.Deleted).Include(x => x.Variants.Where(v => !v.Deleted))
+                .ThenInclude(v => v.ProductType)
+                .ToListAsync()
+            };
+
+            return response;
+        }
+
         //returns the featured products
         public async Task<ServiceResponse<List<Product>>> GetFeaturedProducts()
         {

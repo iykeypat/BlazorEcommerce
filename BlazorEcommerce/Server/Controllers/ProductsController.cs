@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlazorEcommerce.Server.Controllers
@@ -77,6 +78,18 @@ namespace BlazorEcommerce.Server.Controllers
 
             return Ok(result);
         }
+        
+        //returns all products whether visible or not for admin view
+        [HttpGet("admin"),Authorize(Roles ="Admin")]
+        public async Task<ActionResult<ServiceResponse<List<Product>>>> GetAdminProducts()
+        {
+            var result = await productService.GetAdminProducts();
+
+
+            return Ok(result);
+        }
+
+
 
     }
 }
