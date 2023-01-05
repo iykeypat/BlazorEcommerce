@@ -21,8 +21,6 @@ namespace BlazorEcommerce.Server.Controllers
         public async Task<ActionResult<ServiceResponse<List<Product>>>> GetProducts()
         {
             var result = await productService.GetProductsAsync();
-
-            
             return Ok(result); 
         }
 
@@ -31,8 +29,6 @@ namespace BlazorEcommerce.Server.Controllers
         public async Task<ActionResult<ServiceResponse<Product>>> GetProductAsync(int productId)
         {
             var result = await productService.GetProductAsync(productId);
-
-
             return Ok(result);
         }
 
@@ -40,8 +36,6 @@ namespace BlazorEcommerce.Server.Controllers
         public IActionResult GetProductById(int id)
         {
             var result =  productService.GetProductById(id);
-
-
             return Ok(result);
         }
 
@@ -50,8 +44,6 @@ namespace BlazorEcommerce.Server.Controllers
         public async Task<ActionResult<ServiceResponse<List<Product>>>> GetProductsByCategory(string categoryUrl)
         {
             var result = await productService.GetProductsByCategory(categoryUrl);
-
-
             return Ok(result);
         }
 
@@ -60,8 +52,6 @@ namespace BlazorEcommerce.Server.Controllers
         public async Task<ActionResult<ServiceResponse<ProductSearchResult>>> SearchProducts(string searchText,int page=1) 
         {
             var result = await productService.SearchProducts(searchText,page);
-
-
             return Ok(result);
         }
 
@@ -70,8 +60,6 @@ namespace BlazorEcommerce.Server.Controllers
         public async Task<ActionResult<ServiceResponse<List<Product>>>> GetProductSearchSuggestions(string searchText)
         {
             var result = await productService.GetProductSearchSuggestions(searchText);
-
-
             return Ok(result);
         }
 
@@ -80,8 +68,6 @@ namespace BlazorEcommerce.Server.Controllers
         public async Task<ActionResult<ServiceResponse<List<Product>>>> GetFeaturedProducts()
         {
             var result = await productService.GetFeaturedProducts();
-
-
             return Ok(result);
         }
         
@@ -90,8 +76,6 @@ namespace BlazorEcommerce.Server.Controllers
         public async Task<ActionResult<ServiceResponse<List<Product>>>> GetAdminProducts()
         {
             var result = await productService.GetAdminProducts();
-
-
             return Ok(result);
         }
 
@@ -100,8 +84,6 @@ namespace BlazorEcommerce.Server.Controllers
         public async Task<ActionResult<ServiceResponse<Product>>> CreateProduct(Product product)
         {
             var result = await productService.CreateProduct(product);
-
-
             return Ok(result);
         }
 
@@ -110,8 +92,6 @@ namespace BlazorEcommerce.Server.Controllers
         public async Task<ActionResult<ServiceResponse<Product>>> UpdateProduct(Product product)
         {
             var result = await productService.UpdateProduct(product);
-
-
             return Ok(result);
         }
 
@@ -120,8 +100,6 @@ namespace BlazorEcommerce.Server.Controllers
         public async Task<ActionResult<ServiceResponse<bool>>> DeleteProduct(int id)
         {
             var result = await productService.DeleteProduct(id); 
-
-
             return Ok(result);
         }
 

@@ -4,7 +4,7 @@ namespace BlazorEcommerce.Client.Services.ProductService
 {
     public class ProductService : IProductService
     {
-        private readonly HttpClient httpClient;
+        private readonly HttpClient _httpClient;
 
         public event Action ProductChanged;
 
@@ -18,15 +18,15 @@ namespace BlazorEcommerce.Client.Services.ProductService
         //ctor
         public ProductService(HttpClient httpClient)  
         {
-            this.httpClient = httpClient;
+            _httpClient = httpClient;
         }
 
         //returns a list of product either by category or not
         public async Task GetProducts(string? categoryUrl = null)
         {
             var result = categoryUrl == null ?
-                await httpClient.GetFromJsonAsync<ServiceResponse<List<Product>>>("api/products/featured") :
-                await httpClient.GetFromJsonAsync<ServiceResponse<List<Product>>>($"api/products/category/{categoryUrl}");
+                await _httpClient.GetFromJsonAsync<ServiceResponse<List<Product>>>("api/products/featured") :
+                await _httpClient.GetFromJsonAsync<ServiceResponse<List<Product>>>($"api/products/category/{categoryUrl}");
 
 
             if (result != null && result.Data != null)
@@ -51,7 +51,7 @@ namespace BlazorEcommerce.Client.Services.ProductService
         public async Task<ServiceResponse<Product>> GetProduct(int productId)
         {
             
-            var result = await httpClient.GetFromJsonAsync<ServiceResponse<Product>>($"/api/Products/product/{productId}");
+            var result = await _httpClient.GetFromJsonAsync<ServiceResponse<Product>>($"/api/Products/product/{productId}");
             if (result != null && result.Data != null)
             {
                                return result;
@@ -74,7 +74,7 @@ namespace BlazorEcommerce.Client.Services.ProductService
         public async Task SearchProducts(string searchText, int page)
         {
             LastSearchText = searchText;
-            var result = await httpClient.GetFromJsonAsync<ServiceResponse<ProductSearchResult>>($"/api/products/search/{searchText}/{page}");
+            var result = await _httpClient.GetFromJsonAsync<ServiceResponse<ProductSearchResult>>($"/api/products/search/{searchText}/{page}");
 
             if (result != null && result.Data != null)
             {
@@ -93,14 +93,15 @@ namespace BlazorEcommerce.Client.Services.ProductService
 
         public async Task<List<string>> GetProductSearchSuggestions(string searchText)
         {
-            var result = await httpClient.GetFromJsonAsync<ServiceResponse<List<string>>>("api/products/searchsuggestions/" + searchText);
+            var result = await _httpClient.GetFromJsonAsync<ServiceResponse<List<string>>>("api/products/searchsuggestions/" + searchText);
 
             return result.Data;
         }
 
+        //returns all product to admin view
         public async Task GetAdminProducts()
         {
-            var result = await httpClient.GetFromJsonAsync<ServiceResponse<List<Product>>>("api/products/admin");
+            var result = await _httpClient.GetFromJsonAsync<ServiceResponse<List<Product>>>("api/products/admin");
 
             AdminProducts = result.Data;
             CurrentPage = 1;
@@ -110,6 +111,31 @@ namespace BlazorEcommerce.Client.Services.ProductService
             {
                 Message = "No products found.";
             }
+        }
+
+        public async Task<Product> CreateProduct(Product product)
+        {
+            var result = await _httpClient.PostAsJsonAsync("api/products", product);
+            var newProduct = (await result.Content.ReadFromJsonAsync<ServiceResponse<Product>>()).Data;
+
+            return newProduct;
+
+
+        }
+
+        public async Task<Product> UpdateProduct(Product product)
+        {
+            var result = await _httpClient.PutAsJsonAsync("api/products", product);
+            var newProduct = (await result.Content.ReadFromJsonAsync<ServiceResponse<Product>>()).Data;
+
+            return newProduct;
+
+
+        }
+
+        public async Task DeleteProduct(Product product)
+        {
+            var result = await _httpClient.DeleteAsync($"api/products/{product.Id}");
         }
     }
 }
