@@ -5,11 +5,13 @@ namespace BlazorEcommerce.Server.Services.ProductService
     public class ProductService : IProductService
     {
         private readonly DataContext context;
+        IHttpContextAccessor _httpContextAccessor;
 
         //ctor
-        public ProductService(DataContext context)
+        public ProductService(DataContext context, IHttpContextAccessor httpContextAccessor)
         {
             this.context = context;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         //returns all products for admin view whether visible or not
@@ -41,8 +43,17 @@ namespace BlazorEcommerce.Server.Services.ProductService
         {
             var response = new ServiceResponse<Product>();
 
-            var product = await context.Products.Include(x => x.Variants.Where(v => v.Visible && !v.Deleted))
-                .ThenInclude(y => y.ProductType).FirstOrDefaultAsync( z => z.Id == productId && !z.Deleted && z.Visible);
+            Product product = null;
+            if (_httpContextAccessor.HttpContext.User.IsInRole("Admin"))
+            {
+                product = await context.Products.Include(x => x.Variants.Where(v => !v.Deleted))
+                .ThenInclude(y => y.ProductType).FirstOrDefaultAsync(z => z.Id == productId && !z.Deleted);
+            }
+            else
+            {
+                product = await context.Products.Include(x => x.Variants.Where(v => v.Visible && !v.Deleted))
+                .ThenInclude(y => y.ProductType).FirstOrDefaultAsync(z => z.Id == productId && !z.Deleted && z.Visible);
+            }
 
             if (product == null)
             {
