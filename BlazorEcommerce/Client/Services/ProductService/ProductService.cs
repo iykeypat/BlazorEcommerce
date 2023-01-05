@@ -100,7 +100,7 @@ namespace BlazorEcommerce.Client.Services.ProductService
 
         public async Task GetAdminProducts()
         {
-            var result = await httpClient.GetFromJsonAsync<ServiceResponse<List<Product>>>("api/product/admin");
+            var result = await httpClient.GetFromJsonAsync<ServiceResponse<List<Product>>>("api/products/admin");
 
             AdminProducts = result.Data;
             CurrentPage = 1;
