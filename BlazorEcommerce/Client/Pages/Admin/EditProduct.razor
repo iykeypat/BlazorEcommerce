@@ -4,6 +4,7 @@
 @inject IProductTypeService ProductTypeService
 @inject ICategoryService CategoryService
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 
 
 <style>
@@ -140,6 +141,13 @@ else
         </button>
         <ValidationSummary></ValidationSummary>
     </EditForm>
+
+    if (!product.IsNew)
+    {
+        <button type="button" class="btn btn-danger float-start" @onclick="DeleteProduct">
+            Delete Product
+        </button>
+    }
 }
 
 @code {
@@ -222,5 +230,18 @@ else
     void AddVariant()
     {
         product.Variants.Add(new ProductVariant { IsNew = true, ProductId = product.Id });
+    }
+
+    //is called for deleting product by admin
+    async void DeleteProduct()
+    {
+        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", $"Do you really want to delete '{product.Title}'?");
+
+        if (confirmed)
+        {
+            await ProductService.DeleteProduct(product);
+            NavigationManager.NavigateTo("admin/products");
+        }
+
     }
 }
