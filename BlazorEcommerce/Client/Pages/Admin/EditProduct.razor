@@ -65,7 +65,23 @@ else
         </div>
 
         <div class="mb-0">
-            <img src="@product.ImageUrl" />
+            @if (!string.IsNullOrEmpty(product.ImageUrl))
+            {
+                <img src="@product.ImageUrl" />
+            }
+            else
+            {
+                foreach (var image in product.Images)
+                {
+                    <img src="@image.Data" />
+                }
+            }
+
+        </div>
+
+        <div class="mb-0">
+            <label for="images">Image(s)</label>
+            <InputFile id="images" OnChange="OnFileChange" multiple class="form-control"></InputFile>
         </div>
 
         <div class="mb-0">
@@ -103,7 +119,7 @@ else
                     <InputCheckbox @bind-Value="variant.Visible" style="transform: scale(1.5, 1.5)" disabled="@variant.Deleted"></InputCheckbox>
                 </div>
                 <div class="col">
-                    <button type ="button" class="btn-primary" disabled="@variant.Deleted" @onclick="@(()=>RemoveVariant(variant.ProductTypeId))">
+                    <button type="button" class="btn-primary" disabled="@variant.Deleted" @onclick="@(()=>RemoveVariant(variant.ProductTypeId))">
                         <i class="oi oi-trash"></i>
                     </button>
                 </div>
@@ -198,11 +214,12 @@ else
         {
             var result = await ProductService.CreateProduct(product);
             NavigationManager.NavigateTo($"admin/product/{result.Id}");
-        } else
+        }
+        else
         {
             product.IsNew = false;
             product = await ProductService.UpdateProduct(product);
-            NavigationManager.NavigateTo($"admin/product/{product.Id}",true);
+            NavigationManager.NavigateTo($"admin/product/{product.Id}", true);
         }
     }
 
@@ -243,5 +260,20 @@ else
             NavigationManager.NavigateTo("admin/products");
         }
 
+    }
+
+    async Task OnFileChange(InputFileChangeEventArgs e)
+    {
+        var format = "image/png";
+        foreach (var image in e.GetMultipleFiles(int.MaxValue))
+        {
+            var resizedImage = await image.RequestImageFileAsync(format, 200, 200);
+            var buffer = new byte[resizedImage.Size];
+            await resizedImage.OpenReadStream().ReadAsync(buffer);
+
+            var imageData = $"Data:{format};base64,{Convert.ToBase64String(buffer)}";
+
+            product.Images.Add(new Image { Data = imageData });
+        }
     }
 }
