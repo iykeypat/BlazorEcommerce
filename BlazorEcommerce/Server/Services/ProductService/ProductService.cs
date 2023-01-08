@@ -51,6 +51,7 @@ namespace BlazorEcommerce.Server.Services.ProductService
             {
                 Data = await _context.Products.Where(p => !p.Deleted).Include(x => x.Variants.Where(v => !v.Deleted))
                 .ThenInclude(v => v.ProductType)
+                .Include(p => p.Images)
                 .ToListAsync()
             };
 
@@ -62,7 +63,10 @@ namespace BlazorEcommerce.Server.Services.ProductService
         {
             var response = new ServiceResponse<List<Product>>
             {
-                Data = await _context.Products.Where(p=> p.Featured && p.Visible && !p.Deleted).Include(p => p.Variants.Where(p => p.Visible && !p.Deleted)).ToListAsync()
+                Data = await _context.Products.Where(p=> p.Featured && p.Visible && !p.Deleted)
+                .Include(p => p.Variants.Where(p => p.Visible && !p.Deleted))
+                .Include(p => p.Images)
+                .ToListAsync()
             };
 
             return response;
@@ -78,12 +82,16 @@ namespace BlazorEcommerce.Server.Services.ProductService
             if (_httpContextAccessor.HttpContext.User.IsInRole("Admin"))
             {
                 product = await _context.Products.Include(x => x.Variants.Where(v => !v.Deleted))
-                .ThenInclude(y => y.ProductType).FirstOrDefaultAsync(z => z.Id == productId && !z.Deleted);
+                .ThenInclude(y => y.ProductType)
+                .Include(p => p.Images)
+                .FirstOrDefaultAsync(z => z.Id == productId && !z.Deleted);
             }
             else
             {
                 product = await _context.Products.Include(x => x.Variants.Where(v => v.Visible && !v.Deleted))
-                .ThenInclude(y => y.ProductType).FirstOrDefaultAsync(z => z.Id == productId && !z.Deleted && z.Visible);
+                .ThenInclude(y => y.ProductType)
+                .Include(p => p.Images)
+                .FirstOrDefaultAsync(z => z.Id == productId && !z.Deleted && z.Visible);
             }
 
             if (product == null)
@@ -112,7 +120,10 @@ namespace BlazorEcommerce.Server.Services.ProductService
         {
             var response = new ServiceResponse<List<Product>>
             {
-                Data = await _context.Products.Where(p => p.Visible && !p.Deleted).Include(x => x.Variants.Where(v => v.Visible && !v.Deleted)).ToListAsync()
+                Data = await _context.Products.Where(p => p.Visible && !p.Deleted)
+                .Include(x => x.Variants.Where(v => v.Visible && !v.Deleted))
+                .Include(p => p.Images)
+                .ToListAsync()
             };
 
             return response;
@@ -124,7 +135,9 @@ namespace BlazorEcommerce.Server.Services.ProductService
             var response = new ServiceResponse<List<Product>>()
             {
                 Data = await _context.Products.Where( x => x.Category.Url.ToLower().Equals(categoryUrl.ToLower()) && x.Visible && !x.Deleted)
-                .Include(p => p.Variants.Where(v => v.Visible && !v.Deleted)).ToListAsync()
+                .Include(p => p.Variants.Where(v => v.Visible && !v.Deleted))
+                .Include(p => p.Images)
+                .ToListAsync()
             };
 
             return response;
@@ -169,7 +182,10 @@ namespace BlazorEcommerce.Server.Services.ProductService
 
             var products = await _context.Products.Where(p =>
                             p.Title.ToLower().Contains(searchText.ToLower()) || p.Description.ToLower().Contains(searchText.ToLower()) && p.Visible && !p.Deleted)
-                            .Include(p => p.Variants).Skip((page - 1) * (int)pageResult).Take((int)pageResult).ToListAsync();
+                            .Include(p => p.Variants)
+                            .Include(p => p.Images)
+                            .Skip((page - 1) * (int)pageResult)
+                            .Take((int)pageResult).ToListAsync();
 
             var response = new ServiceResponse<ProductSearchResult>
             {
@@ -184,6 +200,7 @@ namespace BlazorEcommerce.Server.Services.ProductService
             return response;
         }
 
+        //updates the properties of n existing product
         public async Task<ServiceResponse<Product>> UpdateProduct(Product product)
         {
             var dbProduct = await _context.Products.FindAsync(product.Id);
@@ -223,6 +240,7 @@ namespace BlazorEcommerce.Server.Services.ProductService
             return new ServiceResponse<Product> { Data = product };
         }
 
+        //Private method that returns a list if products that contain the given text either in the title or description
         private async Task<List<Product>> FindProductsBySearchText(string searchText)
         {
             return await _context.Products.Where(p =>
