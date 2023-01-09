@@ -200,10 +200,10 @@ namespace BlazorEcommerce.Server.Services.ProductService
             return response;
         }
 
-        //updates the properties of n existing product
+        //updates the properties of an existing product
         public async Task<ServiceResponse<Product>> UpdateProduct(Product product)
         {
-            var dbProduct = await _context.Products.FindAsync(product.Id);
+            var dbProduct = await _context.Products.Include(p=> p.Images).FirstOrDefaultAsync(p => p.Id == product.Id);
 
             if (dbProduct == null)
             {
@@ -216,6 +216,11 @@ namespace BlazorEcommerce.Server.Services.ProductService
             dbProduct.CategoryId= product.CategoryId;
             dbProduct.Visible= product.Visible;
             dbProduct.Featured = product.Featured;
+
+            var productImages = dbProduct.Images;
+            _context.RemoveRange(productImages);
+
+            dbProduct.Images = product.Images;
 
             foreach (var variant in product.Variants)
             {
