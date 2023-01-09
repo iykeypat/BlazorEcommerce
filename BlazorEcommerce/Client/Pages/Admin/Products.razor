@@ -1,11 +1,11 @@
 ﻿@page "/admin/products"
 @inject IProductService ProductService
 @inject NavigationManager NavigationManager
-@attribute [Authorize(Roles ="Admin")]
+@attribute [Authorize(Roles = "Admin")]
 
 
 <style>
-    img{
+    img {
         max-height: 50px;
         max-width: 50px;
     }
@@ -16,11 +16,11 @@
 
 @if (ProductService.AdminProducts == null)
 {
-    <span>Loading products...</span> 
+    <span>Loading products...</span>
 }
 else
 {
-    <button class="btn btn-primary float-end" @onclick="CreateProduct"> 
+    <button class="btn btn-primary float-end" @onclick="CreateProduct">
         <i class="oi oi-plus"></i> Add new product
     </button>
 
@@ -38,13 +38,23 @@ else
         <tbody>
             <Virtualize Items="ProductService.AdminProducts" Context="product">
                 <tr>
-                    <td><img src="@product.ImageUrl" /></td>
+
+                    <td>
+                        @if (!string.IsNullOrEmpty(product.ImageUrl))
+                        {
+                            <img src="@product.ImageUrl" />
+                        } else if (product.Images.Count >0)
+                    {
+                        <img src="@product.Images[0].Data" />
+                    }
+                        
+                    </td>
                     <td>@product.Title</td>
                     <td>
                         @foreach (var variant in product.Variants)
-                    {
-                        <span>@variant.ProductType.Name</span> <br />
-                    }
+                        {
+                            <span>@variant.ProductType.Name</span> <br />
+                        }
                     </td>
                     <td>
                         @foreach (var variant in product.Variants)
